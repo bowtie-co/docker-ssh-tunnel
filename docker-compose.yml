@@ -15,3 +15,5 @@ services:
       LOCAL_PORT: 3307
       REMOTE_HOST: usac-db-mysql-staging.clj0ec3twiv7.us-east-1.rds.amazonaws.com
       REMOTE_PORT: 3306
+      # VERBOSE: 'true'
+      PING_WAIT: 5
