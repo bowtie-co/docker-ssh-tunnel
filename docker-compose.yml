@@ -2,7 +2,8 @@ version: '3.5'
 
 services:
   ssh-tunnel:
-    build: .
+    image: bowtie/ssh-tunnel
+    # build: .
     ports:
       - 3333:3307
     volumes:
