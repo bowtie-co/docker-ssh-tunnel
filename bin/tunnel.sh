@@ -57,15 +57,17 @@ if [[ "$APP_ENV" != "" ]]; then
   load_env_file ".env.$APP_ENV"
 fi
 
-SSH_PORT=${SSH_PORT:-22}
-LOCAL_HOST=${LOCAL_HOST:-0.0.0.0}
+export SSH_KEY=${SSH_KEY:-id_rsa}
+export SSH_PORT=${SSH_PORT:-22}
+export BIND_HOST=${BIND_HOST:-0.0.0.0}
 
 REQUIRED_ENV_VARS="
+SSH_PATH
 SSH_USER
 SSH_HOST
 SSH_PORT
-LOCAL_HOST
-LOCAL_PORT
+BIND_HOST
+BIND_PORT
 REMOTE_HOST
 REMOTE_PORT
 "
@@ -76,14 +78,24 @@ for v in $REQUIRED_ENV_VARS; do
   fi
 done
 
-cmd="ssh -f -4 -p $SSH_PORT $SSH_USER@$SSH_HOST -L $LOCAL_HOST:$LOCAL_PORT:$REMOTE_HOST:$REMOTE_PORT -N"
+cmd="ssh -f -4"
+
+if [[ -f $SSH_PATH/$SSH_KEY ]]; then
+  cmd="$cmd -i $SSH_PATH/$SSH_KEY"
+fi
+
+if [[ "$SSH_PORT" != "22" ]]; then
+  cmd="$cmd -p $SSH_PORT"
+fi
+
+cmd="$cmd $SSH_USER@$SSH_HOST -L $BIND_HOST:$BIND_PORT:$REMOTE_HOST:$REMOTE_PORT -N"
 
 debug "SSH Tunnel: '$cmd'"
 
 $($cmd)
 
 warn "$(date)" "[*] "
-warn " Tunnel - $LOCAL_HOST:$LOCAL_PORT => $REMOTE_HOST:$REMOTE_PORT" "[*] "
+warn " Tunnel - $BIND_HOST:$BIND_PORT => $REMOTE_HOST:$REMOTE_PORT" "[*] "
 warn "Via SSH - $SSH_USER@$SSH_HOST:$SSH_PORT" "[*] "
 
 exec "$@"
