@@ -1,21 +1,31 @@
+# bowtie/ssh-tunnel - Basic Example
 version: '3.5'
 
 services:
   ssh-tunnel:
-    # image: bowtie/ssh-tunnel
-    build: .
+    image: bowtie/ssh-tunnel
+    # build: .
     ports:
-      - 3333:3307
+      - 3333:3306
     volumes:
       - ~/.ssh:/home/user/.ssh
     environment:
-      SSH_KEY: example-dev
-      SSH_USER: example-dev
-      SSH_HOST: ssh-use1.staging.usacycling.org
-      SSH_PORT: 22
-      BIND_HOST: 0.0.0.0
-      BIND_PORT: 3307
-      REMOTE_HOST: usac-db-mysql-staging.clj0ec3twiv7.us-east-1.rds.amazonaws.com
+      ##################################
+      # Required environment variables #
+      ##################################
+      SSH_USER: username
+      SSH_HOST: ssh-bastion-host.example.com
+      REMOTE_HOST: mysql-database-host.example.private
       REMOTE_PORT: 3306
-      VERBOSE: 'true'
-      PING_WAIT: 30
+
+      ##################################
+      # Optional environment variables # (showing default values below)
+      ##################################
+      # SSH_KEY: id_rsa
+      # SSH_PORT: 22
+      # SSH_PATH: /home/user/.ssh
+      # SSH_CONF: $SSH_PATH/tunnel_config
+      # BIND_HOST: '0.0.0.0'
+      # BIND_PORT: $REMOTE_PORT
+      # VERBOSE: 'true'
+      # PING_WAIT: 30

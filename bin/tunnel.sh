@@ -59,13 +59,16 @@ fi
 
 export SSH_KEY=${SSH_KEY:-id_rsa}
 export SSH_PORT=${SSH_PORT:-22}
+export SSH_CONF=${SSH_CONF:-$SSH_PATH/tunnel_config}
 export BIND_HOST=${BIND_HOST:-0.0.0.0}
+export BIND_PORT=${BIND_PORT:-$REMOTE_PORT}
 
 REQUIRED_ENV_VARS="
 SSH_PATH
 SSH_USER
 SSH_HOST
 SSH_PORT
+SSH_CONF
 BIND_HOST
 BIND_PORT
 REMOTE_HOST
@@ -78,7 +81,9 @@ for v in $REQUIRED_ENV_VARS; do
   fi
 done
 
-cmd="ssh -f -4"
+[[ -f $SSH_CONF ]] || touch $SSH_CONF
+
+cmd="ssh -f -4 -F $SSH_CONF"
 
 if [[ -f $SSH_PATH/$SSH_KEY ]]; then
   cmd="$cmd -i $SSH_PATH/$SSH_KEY"
